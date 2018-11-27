@@ -5,10 +5,7 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.widget.NestedScrollView;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.view.View;
-
-import com.shark.utils.library.core.SLog;
 
 import java.util.HashSet;
 import java.util.Set;
