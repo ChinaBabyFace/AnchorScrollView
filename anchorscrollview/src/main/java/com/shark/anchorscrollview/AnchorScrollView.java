@@ -1,4 +1,4 @@
-package com.wanmeizhensuo.zhensuo.common.view;
+package com.shark.anchorscrollview;
 
 import android.content.Context;
 import android.support.annotation.NonNull;
