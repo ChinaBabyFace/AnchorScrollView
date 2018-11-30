@@ -24,7 +24,7 @@ public class AnchorScrollView extends NestedScrollView {
 
             if (customerScrollChangeListener == null) return;
             customerScrollChangeListener.onScrollChange(nestedScrollView, scrollX, scrollY, oldScrollX, oldScrollY);
-//            if (Math.abs(scrollY-oldScrollY)<=2||scrollY==0||(scrollY+getMeasuredHeight())==getChildAt(0).getMeasuredHeight()) SLog.e(this, "Scroll stop");
+            //            if (Math.abs(scrollY-oldScrollY)<=2||scrollY==0||(scrollY+getMeasuredHeight())==getChildAt(0).getMeasuredHeight()) SLog.e(this, "Scroll stop");
 
         }
     };
@@ -36,7 +36,7 @@ public class AnchorScrollView extends NestedScrollView {
             View target = findAnchor(getScrollY());
             if (target == null) return;
             onNestedScrollViewChangedListener.onAnchor(target);
-
+            Log.e("AnchorScrollView", "ScrollY:" + getScrollY() + ",ScrollViewHeight:"+getMeasuredHeight()+",ChildHeight:"+getChildAt(0).getMeasuredHeight());
             if ((getScrollY() + getMeasuredHeight()) < getChildAt(0).getMeasuredHeight()) return;
             onNestedScrollViewChangedListener.onScrollToBottom();
         }
