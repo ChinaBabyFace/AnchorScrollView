@@ -1,16 +1,18 @@
-package com.shark.anchorscrollview;
+package com.wanmeizhensuo.zhensuo.common.view;
 
 import android.content.Context;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.widget.NestedScrollView;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.View;
 
 import java.util.HashSet;
 import java.util.Set;
 
 public class AnchorScrollView extends NestedScrollView {
+    private int scrollOffset = 0;
     private Set<View> anchorViewSet;
     private OnNestedScrollViewChangedListener onNestedScrollViewChangedListener;
     private OnScrollChangeListener customerScrollChangeListener;
@@ -31,7 +33,9 @@ public class AnchorScrollView extends NestedScrollView {
         public void run() {
             if (onNestedScrollViewChangedListener == null) return;
             onNestedScrollViewChangedListener.onScrollStop();
-            onNestedScrollViewChangedListener.onAnchor(findAnchor(getScrollY()));
+            View target = findAnchor(getScrollY());
+            if (target == null) return;
+            onNestedScrollViewChangedListener.onAnchor(target);
 
             if ((getScrollY() + getMeasuredHeight()) < getChildAt(0).getMeasuredHeight()) return;
             onNestedScrollViewChangedListener.onScrollToBottom();
@@ -68,7 +72,14 @@ public class AnchorScrollView extends NestedScrollView {
         post(new Runnable() {
             @Override
             public void run() {
-                scrollTo(0, view.getTop());
+                scrollTo(0, 0);
+
+            }
+        });
+        post(new Runnable() {
+            @Override
+            public void run() {
+                scrollTo(0, view.getTop() - scrollOffset);
             }
         });
     }
@@ -86,11 +97,15 @@ public class AnchorScrollView extends NestedScrollView {
 
     private View findAnchor(int scrollY) {
         for (View view : anchorViewSet) {
-            if (scrollY < view.getTop()) continue;
-            if (scrollY >= view.getBottom()) continue;
+            if (scrollY < view.getTop() - scrollOffset) continue;
+            if (scrollY >= view.getBottom() - scrollOffset) continue;
             return view;
         }
         return null;
+    }
+
+    public void setScrollOffset(int scrollOffset) {
+        this.scrollOffset = scrollOffset;
     }
 
     @Override
