@@ -75,13 +75,6 @@ public class AnchorScrollView extends NestedScrollView {
         post(new Runnable() {
             @Override
             public void run() {
-                scrollTo(0, 0);
-
-            }
-        });
-        post(new Runnable() {
-            @Override
-            public void run() {
                 scrollTo(0, view.getTop() - scrollOffset);
             }
         });
