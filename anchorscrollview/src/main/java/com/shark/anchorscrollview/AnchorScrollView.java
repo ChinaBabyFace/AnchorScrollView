@@ -8,39 +8,40 @@ import android.util.AttributeSet;
 import android.util.Log;
 import android.view.View;
 
+import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.Set;
 
 public class AnchorScrollView extends NestedScrollView {
     private int scrollOffset = 0;
+    private View anchorView;
     private Set<View> anchorViewSet;
     private OnNestedScrollViewChangedListener onNestedScrollViewChangedListener;
     private OnScrollChangeListener customerScrollChangeListener;
     private OnScrollChangeListener onScrollChangeListener = new OnScrollChangeListener() {
         @Override
         public void onScrollChange(NestedScrollView nestedScrollView, int scrollX, int scrollY, int oldScrollX, int oldScrollY) {
-            removeCallbacks(scrollStateChangeTask);
-            postDelayed(scrollStateChangeTask, 100);
 
-            if (customerScrollChangeListener == null) return;
-            customerScrollChangeListener.onScrollChange(nestedScrollView, scrollX, scrollY, oldScrollX, oldScrollY);
-            //            if (Math.abs(scrollY-oldScrollY)<=2||scrollY==0||(scrollY+getMeasuredHeight())==getChildAt(0).getMeasuredHeight()) SLog.e(this, "Scroll stop");
+            if (customerScrollChangeListener != null)
+                customerScrollChangeListener.onScrollChange(nestedScrollView, scrollX, scrollY, oldScrollX, oldScrollY);
+            //如果当前滚动Y位于anchorView返回内，直接return不做后续操作，
+            if (anchorView != null && scrollY >= anchorView.getTop() - scrollOffset && scrollY < anchorView.getBottom())
+                return;
+            //查找最新锚点View并跟新当前anchorView
+            View view = findAnchor(getScrollY());
+            if (view == null) return;
+            anchorView = view;
 
-        }
-    };
-    private Runnable scrollStateChangeTask = new Runnable() {
-        @Override
-        public void run() {
             if (onNestedScrollViewChangedListener == null) return;
-            onNestedScrollViewChangedListener.onScrollStop();
 
-            if ((getScrollY() + getMeasuredHeight()) >= getChildAt(0).getMeasuredHeight()) {
+            if (scrollY == 0) onNestedScrollViewChangedListener.onScrollStop();
+
+            if ((scrollY + getMeasuredHeight()) >= getChildAt(0).getMeasuredHeight()) {
                 onNestedScrollViewChangedListener.onScrollToBottom();
             }
 
-            View target = findAnchor(getScrollY());
-            if (target == null) return;
-            onNestedScrollViewChangedListener.onAnchor(target);
+            if (anchorView == null) return;
+            onNestedScrollViewChangedListener.onAnchor(anchorView);
         }
     };
 

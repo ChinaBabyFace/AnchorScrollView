@@ -12,12 +12,15 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.Gravity;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
+import android.webkit.JavascriptInterface;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.Button;
+import android.widget.LinearLayout;
 import android.widget.SimpleAdapter;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -67,8 +70,27 @@ public class MainActivity extends AppCompatActivity {
                 return true;
             }
         });
+        binding.textView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                computeHeight();
+            }
+        });
+        binding.webView1.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                if (event.getAction() == MotionEvent.ACTION_UP) {
 
-        binding.webView1.loadUrl("http://www.waijiaoyi.com");
+                            computeHeight();
+
+
+                }
+                return false;
+            }
+        });
+
+        binding.webView1.addJavascriptInterface(this, "Resize");
+        binding.webView1.loadUrl("http://backend.test.env/hybrid/promotion/detail/4668000/?tabs_type=wiki&is_gray=1");
         binding.webView2.loadUrl("http://www.sina.com");
         binding.webView3.loadUrl("https://baike.baidu.com/item/大同月饼");
 
@@ -228,4 +250,40 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    public void webViewAutoHeight() {
+
+    }
+
+    public void computeHeight() {
+        binding.webView1.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                binding.webView1.loadUrl("javascript:Resize.fetchHeight(document.body.getBoundingClientRect().height)");
+            }
+        },100);
+    }
+
+    @JavascriptInterface
+    public void fetchHeight(final float height) {
+        Log.e("shark", "fetchHeight:" + height);
+        final int newHeight = (int) (height * getResources().getDisplayMetrics().density);
+        Log.e("shark", "fetchHeight2:" + newHeight);
+        binding.webView1.post(new Runnable() {
+            @Override
+            public void run() {
+                if (binding.webView1.getLayoutParams() instanceof LinearLayout.LayoutParams) {
+                    Log.e("Shark", "View height:" + binding.webView1.getHeight());
+                    LinearLayout.LayoutParams linearParams = (LinearLayout.LayoutParams) binding.webView1.getLayoutParams();
+                    linearParams.height = newHeight;
+                    binding.webView1.setLayoutParams(linearParams);
+                    binding.webView1.postInvalidate();
+
+                    Log.e("Shark", "Layout height:" + linearParams.height);
+                    Log.e("Shark", "View height:" + binding.webView1.getHeight());
+                    Log.e("Shark", "Content height:" + binding.webView1.getContentHeight());
+
+                }
+            }
+        });
+    }
 }
