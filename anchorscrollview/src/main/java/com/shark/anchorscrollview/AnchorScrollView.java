@@ -21,14 +21,14 @@ public class AnchorScrollView extends NestedScrollView {
     private OnScrollChangeListener onScrollChangeListener = new OnScrollChangeListener() {
         @Override
         public void onScrollChange(NestedScrollView nestedScrollView, int scrollX, int scrollY, int oldScrollX, int oldScrollY) {
-
             if (customerScrollChangeListener != null)
                 customerScrollChangeListener.onScrollChange(nestedScrollView, scrollX, scrollY, oldScrollX, oldScrollY);
             //如果当前滚动Y位于anchorView返回内，直接return不做后续操作，
-            if (anchorView != null && scrollY >= anchorView.getTop() - scrollOffset && scrollY < anchorView.getBottom())
+            if (anchorView != null && scrollY >= anchorView.getTop() - scrollOffset && scrollY < anchorView.getBottom()-scrollOffset)
                 return;
             //查找最新锚点View并跟新当前anchorView
             View view = findAnchor(getScrollY());
+            Log.e("AnchorScrollView", String.valueOf("Find:"+(view==null?"NULL":view.getId())));
             if (view == null) return;
             anchorView = view;
 
