@@ -28,7 +28,6 @@ public class AnchorScrollView extends NestedScrollView {
                 return;
             //查找最新锚点View并跟新当前anchorView
             View view = findAnchor(getScrollY());
-            Log.e("AnchorScrollView", String.valueOf("Find:"+(view==null?"NULL":view.getId())));
             if (view == null) return;
             anchorView = view;
 
